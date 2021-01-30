@@ -4,12 +4,15 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+import java.awt.*;
+import java.io.File;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.List;
 
 public class Scraper {
     public static void main(String[] args) {
+        FileWriter fileWriter = new FileWriter();
         String searchQuery = "Iphone 6s";
         WebClient client = new WebClient();
         client.getOptions().setCssEnabled(false);
@@ -38,16 +41,21 @@ public class Scraper {
                     item.setUrl(itemUrl);
 
                     String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText();
-                    System.out.println(itemPrice);
-                    item.setPrice(new BigDecimal(itemPrice.replace("$", "")));
+                    String cleanedPrice = itemPrice.replaceAll("[, $;]", "");
+                    item.setPrice(new BigDecimal(cleanedPrice));
+
+                    fileWriter.addItem(item);
+                    item.print();
 
                     ObjectMapper mapper = new ObjectMapper();
                     String jsonString = mapper.writeValueAsString(item);
-                    System.out.println(jsonString);
-
-                    //System.out.println((String.format("\n\nName : %s \nPrice : %s \nUrl: %s", itemName, itemPrice, itemUrl)));
+                    //System.out.println(jsonString);
                 }
+                fileWriter.writeToFile();
             }
+
+            Desktop desktop = Desktop.getDesktop();
+            desktop.open(new File("data.csv"));
         } catch (Exception e) {
             e.printStackTrace();
         }

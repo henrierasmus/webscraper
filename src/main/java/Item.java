@@ -28,4 +28,12 @@ public class Item {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    public void print() {
+        System.out.println(String.format("Title : %s\nPrice : %s\nURL : %s\n",
+            this.title,
+            this.price,
+            this.url
+        ));
+    }
 }
